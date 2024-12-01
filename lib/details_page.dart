@@ -2,40 +2,49 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_application_2/api.dart';
-import 'package:flutter_application_2/products_model.dart';
+import 'package:flutter_application_2/product_details_model.dart';
+import 'package:flutter_application_2/product_details_service.dart';
 
 class DetailsPage extends StatelessWidget {
   DetailsPage({
-    super.key,
-    // required this.productName,
-    // required this.image,
-    //     required this.productDescription,
-    // required this.productNumber,
-    required this.product,
-  });
-  ProductsModel product;
+    required this.id,
 
-  // String image, productName;
-  // String productDescription;
-  // int productNumber;
+    super.key,
+  });
+  int id;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text("Details Page"),
       ),
-      body: Column(
+      body: FutureBuilder<ProductDetailsModel>(
+        future: ProductDetailsService().productDetails(id: id),
+        builder: (context, snapshot) {
+          if (snapshot.hasData) {
+            ProductDetailsModel product = snapshot.data!;
+            return Column(
         children: [
           Image.network(
             '$baseUrlImage${product.image}',
             width: 300,
             height: 270,
           ),
-          Text(product.productName),
+          Text(product.name),
           Text(product.description),
-          Text("Product Number is: ${product.number}"),
+          Text("Product price is: ${product.price}"),
         ],
+      );
+          } else {
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
+          }
+        },
       ),
     );
   }
 }
+
+
